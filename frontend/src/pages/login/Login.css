@@ -1,0 +1,30 @@
+.background-login {
+    background-color: rgba(128, 128, 128, 0.192);
+    height: 80vh;
+    font-size: 14px;
+}
+
+.card {
+    margin-top: 20%;
+    height: 340px;
+    text-align: center;
+}
+
+.card2 {
+    margin-top: 40px;
+    margin-right: 35px;
+}
+
+.input {
+    width: 120px;
+    margin-top: 15px;
+}
+
+input {
+    margin-right: 15%;
+}
+
+h1 {
+    font-weight: bold;
+    font-size: 20px;
+}
