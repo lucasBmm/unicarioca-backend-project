@@ -1,0 +1,29 @@
+.background-home {
+    background-color: rgba(128, 128, 128, 0.192);
+    background-position: right;
+    background-repeat: no-repeat;
+    background-image: url('https://abcdnossacasa.org.br/wp-content/uploads/elementor/thumbs/ABCD-FacebookCapa-ox5rzw2n1gmhrijkvxfs4zewz5bc0w0gbe7eq4ot0w.png');
+    height: 80vh;
+    font-size: 14px;
+}
+
+.container-home {
+    text-align: left;
+    padding: 80px;
+} 
+
+.span-home {
+    font-size: 30px;
+}
+
+.home-container {
+    margin-top: 40px;
+}
+
+#home-title {
+    font-size: 40px;
+}
+
+#home-button {
+    margin-top: 40px;
+}
