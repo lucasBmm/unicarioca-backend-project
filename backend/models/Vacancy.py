@@ -7,9 +7,18 @@ vacancy_collection = db.get_collection("Vaga")
 class Vacancy:
 
     @staticmethod
+    def find_all():
+        vacancies = list(vacancy_collection.find())
+        
+        for vacancy in vacancies:
+            vacancy["_id"] = str(vacancy["_id"])
+        
+        return vacancies
+    
+    @staticmethod
     def create(data):
         return vacancy_collection.insert_one(data).inserted_id
-
+    
     @staticmethod
     def find_by_id(data_id):
         return vacancy_collection.find_one({"_id": ObjectId(data_id)})

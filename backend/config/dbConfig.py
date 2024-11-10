@@ -8,6 +8,7 @@ load_dotenv()
 class Config:
     MONGO_URI = os.getenv("MONGO_URI")
     MONGO_DB = os.getenv("MONGO_DB")
+    SECRET_KEY = os.getenv("SECRET_KEY")
 
 
 client = MongoClient(Config.MONGO_URI)

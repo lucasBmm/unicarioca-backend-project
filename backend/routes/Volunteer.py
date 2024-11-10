@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, request
 from ..models.Volunteer import Volunteer
-from ..config.auth import encrypt, check_pass
+from ..config.auth import require_authentication, check_pass, generate_jwt
 
 volunteer_bp = Blueprint('volunteer', __name__)
 
@@ -9,11 +9,15 @@ def login():
     data = request.get_json()
     if not data or not data.get("email") or not data.get("senha"):
         return jsonify({"error": "Os atributos email/senha devem ser preenchidos"}), 400
+    
     volunteer = Volunteer.find_by_email(data.get("email"))
+    
     if not volunteer:
-        return jsonify({"error": "Company not found"}), 404
-    if check_pass(data.get("senha"),volunteer["senha"]):
-        return jsonify({"message": "Login bem sucedido"}), 200
+        return jsonify({"error": "Volunteer not found"}), 404
+    
+    if check_pass(data.get("senha"), volunteer["senha"]):
+        token = generate_jwt(volunteer["_id"])
+        return jsonify({ "token": token }), 200
 
     return jsonify({"error": "Credenciais inválidas"}), 401
 
@@ -30,6 +34,7 @@ def create_volunteer():
 
 
 @volunteer_bp.route('/volunteers/<vol_id>', methods=['GET'])
+@require_authentication
 def get_volunteer(vol_id):
     volunteer = Volunteer.find_by_id(vol_id)
     if volunteer:
@@ -38,6 +43,7 @@ def get_volunteer(vol_id):
     return jsonify({"error": "Volunteer not found"}), 404
 
 @volunteer_bp.route('/volunteers/<vol_id>', methods=['PUT'])
+@require_authentication
 def update_volunteer(vol_id):
     data = request.json
     updated_count = Volunteer.update_volunteer(vol_id, data)
@@ -46,6 +52,7 @@ def update_volunteer(vol_id):
     return jsonify({"error": "Volunteer not found"}), 404
 
 @volunteer_bp.route('/volunteers/<vol_id>', methods=['DELETE'])
+@require_authentication
 def delete_volunteer(vol_id):
     deleted_count = Volunteer.delete_volunteer(vol_id)
     if deleted_count:
