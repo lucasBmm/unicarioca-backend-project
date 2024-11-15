@@ -18,7 +18,7 @@ const Home = () => {
             </Grid>
             <Grid size={2}>
               <span className='span-home'>| +1000 </span><br/>
-              <span>vagas de voluntariado</span>
+              <span>voluntariados já concluídos</span>
             </Grid>
           </Grid>
         </div>

@@ -2,36 +2,104 @@ import './App.css';
 import { BrowserRouter as Router, Link } from 'react-router-dom';
 import AppRoutes from './routes/Routes';
 import Grid from '@mui/material/Grid2'
+import { useEffect, useState } from 'react';
+import { Alert, Snackbar } from '@mui/material';
 
 function App() {
+  const token = localStorage.getItem('token');
+  const [userName, setUserName] = useState("");
+  const [formValid, setFormValid] = useState("");
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    const storedUsername = localStorage.getItem("userName");
+    if (storedUsername) {
+      setUserName(storedUsername);
+
+    }
+  }, []);
+
+  const handleLogin = () => {
+    setFormValid("Por favor, faça o login primeiro.");
+    setOpen(true);
+  }
+  
+  const handleLogout = () => {
+    localStorage.clear();
+
+    setTimeout(() => {
+      window.location.reload();
+    }, 300);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
   return (
     <Router>
       <nav>
-        <Grid container>
-          <Grid size={2.5}>
-            <Link to="/" className='title'>Impacto Solidário</Link>
+        {token ? (
+          <Grid container>
+            <Grid size={2.5}>
+              <Link to='/' className='title'>Impacto Solidário</Link>
+            </Grid>
+            <Grid size={1}>
+              <Link to='/'>Home</Link>
+            </Grid>
+            <Grid size={1.5}>
+              <Link to='/vacancy-register'>Cadastrar vaga</Link>
+            </Grid>
+            <Grid size={2}>
+              <Link to='/vacancy'>Vagas para voluntários</Link>
+            </Grid> 
+            <Grid size={2.5}>
+            </Grid>
+            <Grid size={1}>
+              <Link to='/profile'>
+                {userName}
+              </Link>
+              <Link to='/profile'>
+                <img src='https://cdn3.iconfinder.com/data/icons/essential-rounded/64/Rounded-31-512.png' alt='login' className='img'/>
+              </Link>
+            </Grid>
+            <Grid size={1}>
+              <Link to='/' onClick={handleLogout}>
+                Logout
+              </Link>
+              <Link to='/' onClick={handleLogout}><img src='https://e7.pngegg.com/pngimages/685/81/png-clipart-computer-icons-encapsulated-postscript-others-miscellaneous-cdr-thumbnail.png' alt='logout' className='img'/></Link>
+            </Grid>
           </Grid>
-          <Grid size={1}>
-            <Link to="/">Home</Link>
+        ) : (
+          <Grid container>
+            <Grid size={2.5}>
+              <Link to='/' className='title'>Impacto Solidário</Link>
+            </Grid>
+            <Grid size={1}>
+              <Link to='/'>Home</Link>
+            </Grid>
+            <Grid size={1.5}>
+              <Link to='/login' onClick={handleLogin}>Cadastrar vaga</Link>
+            </Grid>
+            <Grid size={2}>
+              <Link to='/vacancy'>Vagas para voluntários</Link>
+            </Grid> 
+            <Grid size={2.5}>
+            </Grid>
+            <Grid size={2}>
+              <Link to='/login'>
+                Faça login ou cadastre-se 
+                <img src='https://cdn3.iconfinder.com/data/icons/essential-rounded/64/Rounded-31-512.png' alt='login' className='img'/>
+              </Link>
+            </Grid>
           </Grid>
-          <Grid size={2}>
-            <Link to="/">Cadastrar iniciativa</Link>
-          </Grid>
-          <Grid size={2}>
-            <Link to="/vacancy">Vagas para voluntários</Link>
-          </Grid> 
-          <Grid size={2.5}>
-            <img src='https://cdn-icons-png.flaticon.com/512/2866/2866321.png' alt='lupa' className='img'/> 
-            <input type='text' placeholder='Busque por uma vaga...' /> 
-          </Grid>
-          <Grid size={2}>
-            <Link to='/login'>
-              Faça login ou cadastre-se 
-              <img src='https://cdn3.iconfinder.com/data/icons/essential-rounded/64/Rounded-31-512.png' alt='login' className='img'/>
-            </Link>
-          </Grid>
-        </Grid>
+        )}
       </nav>
+      <Snackbar open={open} autoHideDuration={4000} onClose={handleClose} anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
+        <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
+          {formValid && <span className="error-message">{formValid}</span>}
+        </Alert>
+      </Snackbar>
       <body>
         <AppRoutes />
       </body>

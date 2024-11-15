@@ -15,7 +15,6 @@ def validate_vacancy_data(data):
     return None
 
 @vacancy_bp.route('/vacancies', methods=['GET'])
-@require_authentication
 def find_all():
     vacancies = Vacancy.find_all()
     return jsonify(vacancies), 200
@@ -31,7 +30,7 @@ def create_vacancy():
 
     vac_id = Vacancy.create(data)
     if not vac_id:
-        return jsonify({"error": "O email já está cadastrado no sistema"}), 400
+        return jsonify({"error": "Já  cadastrado no sistema"}), 400
     return jsonify({"id": str(vac_id)}), 201
 
 @vacancy_bp.route('/vacancies/<vac_id>', methods=['GET'])
