@@ -1,93 +1,88 @@
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Grid from '@mui/material/Grid2';
-import { Button } from '@mui/material';
+import { Button, TextField } from '@mui/material';
+import { AxiosError } from "axios";
+import httpClient from "../../shared/http-client/http-client";
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './Vacancy.css';
 
-const jobListings = [
-  {
-    title: "Desenvolvedor Front-end",
-    description: "Responsável por implementar interfaces web utilizando React.",
-    requirements: "Experiência com JavaScript, React, HTML, CSS.",
-    location: "São Paulo, SP"
-  },
-  {
-    title: "Analista de Dados",
-    description: "Realizar análise de grandes volumes de dados e gerar relatórios para suporte a decisões.",
-    requirements: "Experiência com SQL, Python, Power BI.",
-    location: "Rio de Janeiro, RJ"
-  },
-  {
-    title: "Engenheiro de Software",
-    description: "Desenvolvimento e manutenção de sistemas distribuídos de alta performance.",
-    requirements: "Experiência com Java, Spring Boot, microservices.",
-    location: "Curitiba, PR"
-  },
-  {
-    title: "Designer UX/UI",
-    description: "Criar protótipos e wireframes, garantindo a melhor experiência do usuário.",
-    requirements: "Conhecimento em Figma, Sketch, Adobe XD.",
-    location: "Porto Alegre, RS"
-  },
-  {
-    title: "Administrador de Redes",
-    description: "Gerenciar a infraestrutura de redes e servidores, garantindo alta disponibilidade.",
-    requirements: "Conhecimento em Linux, Windows Server, AWS.",
-    location: "Belo Horizonte, MG"
-  },
-  {
-    title: "Especialista em Segurança da Informação",
-    description: "Implementar políticas de segurança e realizar auditorias.",
-    requirements: "Conhecimento em segurança de rede, firewalls, criptografia.",
-    location: "Brasília, DF"
-  },
-  {
-    title: "Gerente de Projetos",
-    description: "Liderar projetos de TI, gerenciando prazos, orçamentos e equipe.",
-    requirements: "Certificação PMP, experiência em gestão de projetos ágeis.",
-    location: "Florianópolis, SC"
-  },
-  {
-    title: "Analista de Marketing Digital",
-    description: "Desenvolver e executar campanhas de marketing digital.",
-    requirements: "Conhecimento em SEO, Google Ads, redes sociais.",
-    location: "Salvador, BA"
-  },
-  {
-    title: "Cientista de Dados",
-    description: "Construir modelos preditivos e gerar insights com base em dados.",
-    requirements: "Experiência com machine learning, Python, R.",
-    location: "Fortaleza, CE"
-  },
-  {
-    title: "Consultor SAP",
-    description: "Implementar e manter módulos SAP para clientes de grande porte.",
-    requirements: "Experiência com SAP MM, FI, CO.",
-    location: "Campinas, SP"
-  }
-];
-
 const Vacancy = () => {
+  const [jobListings, setJobListings] = useState([]);
+  const [search, setSearch] = useState('');
+  const navigate = useNavigate();
+  const token = localStorage.getItem('token');
+
+  const handleInscricao = (vacancyTitle) => {
+    if(token) {
+      localStorage.setItem('vacancyTitle', vacancyTitle);
+      navigate('/vacancy-enter');
+    } else {
+        localStorage.setItem('showMessage', 'true');
+        navigate('/login');
+    }
+  };
+
+  const filteredJobListings = jobListings.filter(job =>
+    job.title.toLowerCase().includes(search.toLowerCase()) ||
+    job.description.toLowerCase().includes(search.toLowerCase()) ||
+    job.requirements.toLowerCase().includes(search.toLowerCase()) ||
+    job.location.toLowerCase().includes(search.toLowerCase())
+  );
+
+  const getVacancies = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const result = await httpClient.get("vacancies", { token }); 
+      setJobListings(result.data); 
+
+    } catch (e) {
+      if (e instanceof AxiosError) {
+        console.log("Erro ao carregar dados");
+      }
+    }
+  };
+
+  useEffect(() => {
+    getVacancies();
+  }, []);
+
   return (
     <div className='background-vacancy'>
       <hr/>
       <div className='title-vacancy'>
-        <span style={{ fontSize: '40px'}}>VAGAS</span>
+        <span style={{ fontSize: '40px' }}>VAGAS</span>
         <br/><br/>
-        <span>800 vagas abertas no momento</span>
+        <span>{jobListings.length} vagas abertas no momento</span><br/><br/>
+        <TextField
+          label="Busque por uma vaga, localização, requisitos ou descrição..."
+          variant="outlined"
+          margin="normal"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          fullWidth
+          sx={{
+            width: '40%',
+            backgroundColor: 'white',
+            '& .MuiOutlinedInput-root': {
+              backgroundColor: 'white',
+            },
+          }}
+        />
       </div>
       <Grid container spacing={2} justifyContent="center">
-        {jobListings.map((job, index) => (
+        {filteredJobListings.map((job, index) => (
           <Grid item xs={3} sm={3} md={3} key={index} style={{ display: 'flex' }}>
             <Card style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%' }}>
               <CardContent className="card-content" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', flexGrow: 1 }}>
                 <div>
                   <h3>{job.title}</h3>
-                  <p>{job.description}</p>
+                  <p><strong>Descrição: </strong>{job.description}</p>
                   <p><strong>Requisitos:</strong> {job.requirements}</p>
                   <p><strong>Localização:</strong> {job.location}</p>
                 </div>
-                <Button variant="contained" color="secondary">Inscrição</Button>
+                <Button variant="contained" color="secondary" onClick={() => handleInscricao(job.title)}>Inscrição</Button>
               </CardContent>
             </Card>
           </Grid>
